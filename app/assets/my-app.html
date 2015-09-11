@@ -5,6 +5,9 @@
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/spiral-knob/spiral-knob.html">
+
+<script src="../bower_components/spiral/spiral.min.js"></script>
 
 <dom-module id="my-app">
 
@@ -14,7 +17,12 @@
 
   <template>
     <!-- your DOM here -->
-    <h1>My First Music App!</h1>
+    <h1>Hello World!</h1>
+    <p>What a beautiful day!</p>
+
+    <spiral-knob id="knobAmp" label="Amp" value="0.5"></spiral-knob>
+
+
   </template>
 
   <script>
@@ -23,20 +31,38 @@
       is: "my-app",
 
       properties: {
+
+        context: {
+          type: Object,
+          value: new AudioContext()
+        },
         /* user-defined properties */
-      },
+        osc: Object,
+        amp: Object
+  },
 
-      /* user-defined methods */
+buildGraph: function() {
+  var c = this.context;
+  this.osc = c.createOscillator();
+  this.amp = c.createGain();
 
+  this.osc.to(this.amp).to(c.DAC);
+  this.osc.start();
+
+ },
 
       /* Polymer built-in event handlers */
       ready: function () {
-        console.log('My app is ready!');
-      },
+        this.buildGraph();
+        this.$.knobAmp.bind(this.amp.gain);
+  
+        //this.playSound();
+        //this.context = new AudioContext();
+ },
 
       attached: function () {}
 
-    });
+});
   </script>
 
 </dom-module>
